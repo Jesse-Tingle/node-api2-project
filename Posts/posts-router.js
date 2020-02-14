@@ -23,26 +23,43 @@ router.get("/", async (req, res) => {
 
 // GET gets post by id
 //   /api/posts/:id
-router.get("/:id", (req, res) => {});
+router.get("/:id", async (req, res) => {
+  try {
+    const post = await db.findById(req.params.id);
+
+    if (post.length < 1) {
+      return res.status(404).json({
+        message: `The post with id ${req.params.id} does not exist.`
+      });
+    }
+
+    res.status(200).json(post);
+  } catch (err) {
+    res.status(500).json({
+      err,
+      errorMessage: "The user information could not be retrieved."
+    });
+  }
+});
 
 // GET gets comments by post id
 //   /api/posts/:id/comments
-router.get("/:id/comments", (req, res) => {});
+//router.get("/:id/comments", (req, res) => {});
 
 // POST posts a new post
 //   /api/posts
-router.post("/", (req, res) => {});
+//router.post("/", (req, res) => {});
 
 // POST posts a new comment
 //   /api/posts/:id/comments
-router.post("/:id/comments", (req, res) => {});
+//router.post("/:id/comments", (req, res) => {});
 
 // PUT updates post by id
 //   /api/posts/:id
-router.put("/:id", (req, res) => {});
+//router.put("/:id", (req, res) => {});
 
 // DELETE deletes post by id
 //  /api/posts/:id
-router.delete("/:id", (req, res) => {});
+//router.delete("/:id", (req, res) => {});
 
 module.exports = router;
