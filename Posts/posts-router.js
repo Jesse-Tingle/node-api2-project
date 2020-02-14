@@ -65,7 +65,26 @@ router.get("/:id/comments", async (req, res) => {
 
 // POST posts a new post
 //   /api/posts
-//router.post("/", (req, res) => {});
+router.post("/", async (req, res) => {
+  try {
+    const { title, contents } = req.body;
+    console.log("title: ", title);
+    console.log("contents: ", contents);
+
+    if (!title || !contents) {
+      return res.status(400).json({
+        errorMessage: "Please provide title and contents for the post."
+      });
+    }
+
+    res.status(201).json(await db.insert({ title, contents }));
+  } catch (error) {
+    res.status(500).json({
+      err,
+      errorMessage: "There was an error while saving the post to the database"
+    });
+  }
+});
 
 // POST posts a new comment
 //   /api/posts/:id/comments
