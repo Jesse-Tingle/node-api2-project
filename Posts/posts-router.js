@@ -44,7 +44,24 @@ router.get("/:id", async (req, res) => {
 
 // GET gets comments by post id
 //   /api/posts/:id/comments
-//router.get("/:id/comments", (req, res) => {});
+router.get("/:id/comments", async (req, res) => {
+  try {
+    const comment = await db.findPostComments(req.params.id);
+
+    if (comment.length < 1) {
+      return res.status(404).json({
+        message: `The post with id ${req.params.id} does not have comments.`
+      });
+    }
+
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(500).json({
+      err,
+      errorMessage: "The comments information could not be retrieved."
+    });
+  }
+});
 
 // POST posts a new post
 //   /api/posts
