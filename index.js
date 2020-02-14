@@ -3,6 +3,8 @@ const express = require("express");
 
 // file imports
 const db = require("./data/db");
+const welcomeRouter = require("./Welcome/welcome-router");
+const postsRouter = require("./Posts/posts-router");
 
 // global objects
 const server = express();
@@ -10,9 +12,9 @@ const server = express();
 // middleware
 server.use(express.json());
 
-server.get("/", (req, res) => {
-  res.json({ message: "Project 2" });
-});
+// sub-routers
+server.use("/", welcomeRouter);
+server.use("/api/posts", postsRouter);
 
 const port = 8000;
 
