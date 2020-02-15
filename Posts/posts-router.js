@@ -90,22 +90,29 @@ router.post("/", async (req, res) => {
 //   /api/posts/:id/comments
 router.post("/:id/comments", async (req, res) => {
   try {
-    const { id } = req.params.id;
+    const post = await db.findById(req.params.id);
+    console.log("post:", post.length);
+    const id = req.params.id;
     console.log("id: ", id);
     const { text } = req.body;
-    console.log("text: ", text);
 
-    if (!id) {
+    if (post.length < 1) {
       return res.status(404).json({
-        errorMessage: `The post with the id ${req.params.id} does not exist.`
+        message: `The post with id ${req.params.id} does not exist.`
       });
     } else if (!text) {
       return res
         .status(400)
         .json({ errorMessage: "Please provide text for the comment." });
+    } else {
+      const comment = { text, post_id: id };
+      console.log("comment: ", comment);
+      const commentID = await db.insertComment(comment);
+      console.log("postedComment: ", commentID);
+      const newComment = await db.findCommentById(commentID.id);
+      console.log("newComment: ", newComment);
+      res.status(201).json(newComment);
     }
-
-    res.status(201).json(await db.insertComment({ text }));
   } catch (error) {
     res.status(500).json({
       err,
@@ -124,3 +131,19 @@ router.post("/:id/comments", async (req, res) => {
 //router.delete("/:id", (req, res) => {});
 
 module.exports = router;
+
+// const { text } = req.body;
+// console.log("text: ", text);
+
+// const foundPost = await db.findById(req.params.id);
+// console.log("foundPost: ", foundPost);
+
+// if (!foundPost) {
+//   return res.status(404).json({
+//     errorMessage: `The post with the id ${req.params.id} does not exist.`
+//   });
+// } else if (!text) {
+//   return res
+//     .status(400)
+//     .json({ errorMessage: "Please provide text for the comment." });
+// }
