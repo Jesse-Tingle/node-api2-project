@@ -124,26 +124,70 @@ router.post("/:id/comments", async (req, res) => {
 
 // PUT updates post by id
 //   /api/posts/:id
-//router.put("/:id", (req, res) => {});
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("id: ", id);
+    const post = await db.findById(id);
+    console.log("post: ", post);
+    const { title, contents } = req.body;
+    console.log("title: ", title);
+    console.log("contents: ", contents);
+    if (post.length < 1) {
+      res
+        .status(400)
+        .json({ message: `The post with ID ${req.params.id} does not exist.` });
+    } else if (!title || !contents) {
+      res.status(400).json({
+        errorMessage: "Please provide title and contents for the post."
+      });
+    } else {
+      const newText = { title, contents };
+      console.log("newText: ", newText);
+      await db.update(id, newText);
+      const updatedPost = await db.findById(id);
+      console.log("updatedPost: ", updatedPost);
+
+      res.status(200).json(updatedPost);
+    }
+  } catch (error) {
+    res.status(500).json({
+      err,
+      error: "The post information could not be modified."
+    });
+  }
+});
+
+// try {
+//   const { id } = req.params;
+//   const { title, contents } = req.body;
+//   console.log("title: ", title);
+//   console.log("contents: ", contents);
+//   console.log("id: ", id);
+//   const post = await db.findById(req.params.id);
+//   console.log("post: ", post[0].title);
+//   if (!post) {
+//     res
+//       .status(400)
+//       .json({ message: `The post with ID ${req.params.id} does not exist.` });
+//   } else {
+//     const newText = { title, contents };
+//     console.log("newText: ", newText);
+//     await db.update(id, newText);
+//     const updatedPost = await db.findById(id);
+//     console.log("updatedPost: ", updatedPost);
+
+//     res.status(200).json(updatedPost);
+//   }
+// } catch (error) {
+//   res.status(500).json({
+//     err,
+//     error: "The post information could not be modified."
+//   });
+// }
 
 // DELETE deletes post by id
 //  /api/posts/:id
 //router.delete("/:id", (req, res) => {});
 
 module.exports = router;
-
-// const { text } = req.body;
-// console.log("text: ", text);
-
-// const foundPost = await db.findById(req.params.id);
-// console.log("foundPost: ", foundPost);
-
-// if (!foundPost) {
-//   return res.status(404).json({
-//     errorMessage: `The post with the id ${req.params.id} does not exist.`
-//   });
-// } else if (!text) {
-//   return res
-//     .status(400)
-//     .json({ errorMessage: "Please provide text for the comment." });
-// }
